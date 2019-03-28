@@ -129,27 +129,21 @@ module FindMyMac
 
       #match objects to configuration
       matchedObjsArr = findTheMacs(configHash.reject{ |k, v| v == nil})
-      puts("Matched Objects:  #{matchedObjsArr.size}")
-
+      if (matchedObjsArr.size > 0)
+        puts("We have found #{matchedObjsArr.size} computers matching this configuration.")
+      end
       #enter new configurations to narrow results?
       exit = enterNewConfig(matchedObjsArr)
       exit != 'y' && matchedObjsArr.size > 0 ? printMatchedItems(matchedObjsArr) : nil
-      matchedObjsArr.size > 0 && exit == "n" ? result = getAddlInfo(matchedObjsArr) : result = ['n', -1]
+      matchedObjsArr.size > 0 && exit == "n" ? getAddlInfo(matchedObjsArr) :nil
 
-      moreInfo = result[0]
-      index = result[1]
-
-      if moreInfo == 'y'
-        puts("\nNeed to get more information.  Use the following index:  #{index}\n")
-        matchedObjsArr[index].print
-      end
     end
 
     def enterNewConfig(matchedObjsArr)
       #returns input y or n to get additional information
-      input = 'y'
+      input = 'n'
       if matchedObjsArr.size == 0
-        puts("No objects matched this search.")
+        puts("There are no refurbished computers matching this configuration.")
       elsif matchedObjsArr.size > 10
         puts("\nYou have a large number of matches:  #{matchedObjsArr.size}.")
         input = getYNInput("Would you like to narrow the selections by adding criteria? [y/n]")
@@ -179,10 +173,13 @@ module FindMyMac
           print("Please enter a value between 1..#{matchedObjsArr.size}")
           index = gets.strip.to_i
         end
-        puts("\nSelected:  ")
+        puts("\nSelected:  \n")
+        puts("================================")
+        hash = Scraper::scrape_addl_info(matchedObjsArr[index - 1].link)
+
+        matchedObjsArr[index-1].add_attrs_by_hash(hash)
         matchedObjsArr[index - 1].print
       end
-      return moreInfo, index - 1#more information
     end
 
     def getYNInput(prompt)

@@ -59,6 +59,55 @@ class Scraper
 
   end #scrape_refurbished_macs
 
+  def self.getDetail(str)
+    retStr = nil
+    #looking for RAM, HardDrive, GPU, dateReleased
+    if str.include?("released")
+      retStr = "YearReleased"
+    elsif str.include?("Radeon") #MUST fire before memory as both use string memory
+      retStr = "GPU"
+    elsif str.include?("memory")
+      retStr = "RAM"
+    elsif str.include?("SSD")
+      retStr = "HardDrive"
+    end #if
+    retStr
+  end
+
+  def self.scrape_addl_info(url="https://www.apple.com/shop/product/G0UC3LL/A/Refurbished-154-inch-MacBook-Pro-31GHz-Quad-core-Intel-Core-i7-with-Retina-display-Space-Gray?fnode=e6dc8e0258d94d542289be52a9dc6eb1aec38e58149c9f96393ca5f5dd1947506c4c6f73db201cac625df431694aeebff4542a5960107e79058082c5204031ee22014d8beee65baa824d71488c78a1e6")
+    hashArr = {}
+    mainpanel = get_details(url, 'div.as-productinfosection-mainpanel')
+    paragraphs = mainpanel[0].css('p')
+
+    ram = year_released = gpu = hard_drive = ""
+    paragraphs.each do |x|
+      detailStr = x.text.lstrip
+      detailStr = detailStr.rstrip
+      detail = getDetail(detailStr)
+
+      case detail
+        when "RAM"
+          ram = detailStr
+        when "HardDrive"
+          hard_drive = detailStr
+        when "YearReleased"
+          year_released = detailStr
+        when "GPU"
+          gpu = detailStr
+      end
+    end #for each paragraph
+
+    hash = {
+        :ram => ram,
+        :hard_drive => hard_drive,
+        :year_released => year_released,
+        :gpu => gpu
+      }
+
+      hash = hash.reject{ |k,v| v == nil || v == ""}
+  end #scrape_addl_info
+
+
   def self.sort(arr)
     tmpArr = []
     arr.each do |x|
@@ -190,7 +239,7 @@ class Scraper
             color = tmpArr[j]
         elsif tmpArr[j] != ""
             puts("Error message here...our description doesn't include expected values:  #{tmpArr[j]}")
-        end #if  
+        end #if
       end #j
       hash = {
         :display_size => display_size,
