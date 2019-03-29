@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+#Here we require a relative file that will execute the program.
+
+require_relative "../config/environment"
+
+FindMyMac::Finder.new.call
