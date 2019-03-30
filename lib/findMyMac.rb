@@ -20,10 +20,12 @@ module FindMyMac
     #====================================================================
     #              Constructor methods
     #====================================================================
-    def initialize
+    def initialize(mac_attrs_hash=nil)
       initArrays
 
-      mac_attrs_hash = Scraper::scrape_refurbished_mac
+      if (mac_attrs_hash == nil)
+        mac_attrs_hash = Scraper::scrape_refurbished_mac
+      end
 
       mac_attrs_hash.each do |x|
         #create objects for each refurbished item
@@ -124,6 +126,7 @@ module FindMyMac
       selectComputerType == 1 ? configHash = selectDesktopConfiguration : configHash = selectLaptopConfiguration
 
       puts("\nSelected:  \n\tModel:  #{configHash[:model]}\n\tDisplay:  #{configHash[:display]}\n\tCPU: #{configHash[:cpu]}\n\tNumber of Cores: #{configHash[:number_cores]}\n")
+      puts("")
       configHash
     end
     #==============================================================================
@@ -349,29 +352,21 @@ module FindMyMac
     #  calls findMatchedObjs with appropriate set of objects
     #==========================================================================
     def findMatches(configHash)
-      puts("Looking for configHash[:model] == #{configHash[:model]}")
       matchedObjsArr = []
       if configHash[:model] == "MacBook"
-        puts("Looking at @MacBookObjs")
         matchedObjsArr = findMatchedObjs(configHash, @MacBookObjs)
       elsif configHash[:model] == "MacBook Pro"
         matchedObjsArr = findMatchedObjs(configHash, @MacBookProObjs)
-        puts("Looking at @MacBookProObjs")
       elsif configHash[:model] == "MacBook Air"
         matchedObjsArr = findMatchedObjs(configHash, @MacBookAirObjs)
-        puts("Looking at @MacBookAirObjs")
       elsif configHash[:model] == "iMac"
         matchedObjsArr = findMatchedObjs(configHash, @iMacObjs)
-        puts("Looking at @iMacObjs")
       elsif configHash[:model] == "iMac Pro"
         matchedObjsArr = findMatchedObjs(configHash, @iMacProObjs)
-        puts("Looking at @iMacProObjs")
       elsif configHash[:model] == "Mac Mini"
         matchedObjsArr = findMatchedObjs(configHash, @MacMiniObjs)
-        puts("Looking at @MacMiniObjs")
       elsif configHash[:model] == "Mac Pro"
         matchedObjsArr = findMatchedObjs(configHash, @MacProObjs)
-        puts("Looking at @MacProObjs")
       end
       matchedObjsArr
     end
@@ -469,6 +464,8 @@ module FindMyMac
 
         matchedObjsArr[index-1].add_attrs_by_hash(hash)
         matchedObjsArr[index - 1].print
+        puts("")
+
       end
     end
     #====================================================================
