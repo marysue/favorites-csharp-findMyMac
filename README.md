@@ -22,13 +22,17 @@ Or install it yourself as:
 
 There are two ways to use this gem:
 
-1.  Invoke
-        hash = Scraper::scrape_refurbished_mac : to manually receive the hash array of all computers available. T FindMyMac::Finder(hash) :  passing in the hash returned from Scraper.
-2.  Invoke finder = FindMyMac::Finder.new  : with no arguments
+1.  Create a hash of available refurbished computers from the Mac site.
 
-Once finder has been instantiated, the entry point to running the search is:
+        hash = Scraper::scrape_refurbished_mac
 
-     finder.findMacs
+2.  Instantiate a finder object:
+
+        finder = FindMyMac::Finder.new
+
+3.  Once finder has been instantiated, the entry point to running the search is:
+
+        finder.findMacs
 
 ## Development
 

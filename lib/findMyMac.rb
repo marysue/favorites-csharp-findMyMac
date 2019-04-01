@@ -114,10 +114,6 @@ module FindMyMac
       @@all
     end
 
-    def self.add_attrs_by_hash(mac_attrs_hash)
-      #create new Mac instance, then add all attributes we have values for
-      mac_attrs_hash.each{|key, value| self.send(("#{key}="), value)}
-    end
     #====================================================================
     #  Entry point for selecting laptop or desktop search
     #====================================================================
@@ -125,8 +121,8 @@ module FindMyMac
       configHash = {}
       selectComputerType == 1 ? configHash = selectDesktopConfiguration : configHash = selectLaptopConfiguration
 
-      puts("\nSelected:  \n\tModel:  #{configHash[:model]}\n\tDisplay:  #{configHash[:display]}\n\tCPU: #{configHash[:cpu]}\n\tNumber of Cores: #{configHash[:number_cores]}\n")
       puts("")
+      puts("\nConfiguration Requested:  \n\tModel:  #{configHash[:model]}\n\tDisplay:  #{configHash[:display]}\n\tCPU: #{configHash[:cpu]}\n\tNumber of Cores: #{configHash[:number_cores]}\n\n")
       configHash
     end
     #==============================================================================
@@ -337,7 +333,7 @@ module FindMyMac
       #match objects to configuration
       matchedObjsArr = findMatches(configHash.reject{ |k, v| v == nil})
       if (matchedObjsArr.size > 0)
-        puts("We have found #{matchedObjsArr.size} computers matching this configuration.")
+        puts("We have found #{matchedObjsArr.size} computers matching this configuration.\n\n")
       end
       #enter new configurations to narrow results?
       exit = enterNewConfig(matchedObjsArr)
@@ -458,7 +454,7 @@ module FindMyMac
           print("Please enter a value between 1..#{matchedObjsArr.size}")
           index = gets.strip.to_i
         end
-        puts("\nSelected:  \n")
+        puts("\nConfiguration requested:  \n")
         puts("================================")
         hash = Scraper::scrape_addl_info(matchedObjsArr[index - 1].link)
 

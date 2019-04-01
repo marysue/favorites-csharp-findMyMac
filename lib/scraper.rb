@@ -64,12 +64,18 @@ class Scraper
     #looking for RAM, HardDrive, GPU, dateReleased
     if str.include?("released")
       retStr = "YearReleased"
-    elsif str.include?("Radeon") #MUST fire before memory as both use string memory
+    elsif str.include?("Radeon") || str.include?("Graphics") #MUST fire before memory as both use string memory
       retStr = "GPU"
     elsif str.include?("memory")
       retStr = "RAM"
     elsif str.include?("SSD")
       retStr = "HardDrive"
+    elsif str.include?("Camera")
+      retStr = "Camera"
+    elsif str.downcase.include?("display")
+      retStr = "Display"
+    else
+      retStr = "Other"
     end #if
     retStr
   end
@@ -79,7 +85,7 @@ class Scraper
     mainpanel = get_details(url, 'div.as-productinfosection-mainpanel')
     paragraphs = mainpanel[0].css('p')
 
-    ram = year_released = gpu = hard_drive = ""
+    ram = year_released = gpu = hard_drive = other = camera = display = ""
     paragraphs.each do |x|
       detailStr = x.text.lstrip
       detailStr = detailStr.rstrip
@@ -94,6 +100,12 @@ class Scraper
           year_released = detailStr
         when "GPU"
           gpu = detailStr
+        when "Other"
+          other = detailStr
+        when "Camera"
+          camera = detailStr
+        when "Display"
+          display = detailStr
       end
     end #for each paragraph
 
@@ -101,7 +113,10 @@ class Scraper
         :ram => ram,
         :hard_drive => hard_drive,
         :year_released => year_released,
-        :gpu => gpu
+        :gpu => gpu,
+        :camera => camera,
+        :display => display,
+        :other => other
       }
 
       hash = hash.reject{ |k,v| v == nil || v == ""}
