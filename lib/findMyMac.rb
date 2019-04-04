@@ -1,16 +1,13 @@
-require "./config/environment.rb"
-
 module FindMyMac
   class Error < StandardError; end
 
-
   class FindMyMac::Finder
     #Array indices for available configurations - used by desktopConfigs, laptopConfigs arrays
-    MODELS = 0
-    CPUS = 1
-    NUMBER_CORES = 2
-    CORE_TYPE = 3
-    DISPLAY = 4
+    MODELS ||= 0
+    CPUS ||= 1
+    NUMBER_CORES ||= 2
+    CORE_TYPE ||= 3
+    DISPLAY ||= 4
 
     attr_accessor :desktopObjs, :laptopObjs, :otherObjs,
                 :iMacObjs, :iMacProObjs, :MacBookObjs, :MacBookProObjs,
@@ -55,7 +52,7 @@ module FindMyMac
     end
 
     def createLaptopObj(computerHash)
-      laptopObj = Laptop.new(computerHash)
+      laptopObj = Mac.new(computerHash)
       if computerHash[:model] == "MacBook"
         @MacBookObjs << laptopObj
       elsif computerHash[:model] == "MacBook Pro"
@@ -69,7 +66,7 @@ module FindMyMac
     end
 
     def createDesktopObj(computerHash)
-      desktopObj = Desktop.new(computerHash)
+      desktopObj = Mac.new(computerHash)
       if computerHash[:model] == "iMac"
         @iMacObjs << desktopObj
       elsif computerHash[:model] == "iMac Pro"
@@ -186,7 +183,13 @@ module FindMyMac
           selection = getValidSelection(arr.size)
           selection -= 1 #set to index value
         end #presentChoice == "y"
-      end #if arr.size > 1
+      elsif arr.size == 1 #if arr.size > 1
+        puts("There is only one selection available for this component.")
+        selection = 0
+      else #arr size == 0
+        puts("There are no selections available for this component.")
+        selection = nil
+      end
       selection  #return input
     end
     #==========================================================================
@@ -237,22 +240,17 @@ module FindMyMac
       models = @desktopConfigs[MODELS].sort_by{|h| h.downcase}
       index = getSelectionAsIndex(models, "Which model would you like?  ", true)
       index != nil ? model = models[index] : model = nil
-      puts("Selection:  #{index}:  #{models[index]}")
+
       cpuArray = getAvailCPUs(model)
       cpuArray = cpuArray.sort_by{|h| h.downcase}
+      puts("CpuArray size:  #{cpuArray.size}")
       index = getSelectionAsIndex(cpuArray, "Would you like to select the CPU?  [y/n]:  ", false)
       index != nil ? cpu = cpuArray[index] : cpu = nil
-      for i in 0 .. cpuArray.size - 1 do
-        puts("Cpu[#{i}]: #{cpuArray[i]}\n")
-      end
-      puts("Selection:  #{index}: #{cpuArray[index]}")
 
       coresArr = @desktopConfigs[NUMBER_CORES].sort_by{ |h| h.downcase}
       index = getSelectionAsIndex(coresArr, "Would you like to select the number of cores? [y/n]:   ", false)
       index != nil ? number_cores = coresArr[index] : number_cores = nil
-      if index != nil
-        puts("Selection:  #{index}: #{coresArr[index]}")
-      end
+
       configHash = {
         :model => model,
         :cpu => cpu,

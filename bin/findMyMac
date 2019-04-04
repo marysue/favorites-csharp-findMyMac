@@ -1,0 +1,12 @@
+#!"C:\Ruby24-x64\bin\ruby.exe"
+
+#Use the Ruby interpreter (CUI) 2.4.4p296[x64-mingw32] print_model_from_hashArray
+#C:\Ruby24-x64\bin\ruby.exe
+
+require './config/environment'
+
+puts "Welcome to the Mac Finder Store..."
+puts "Obtaining information from Apple's Refurbished Mac store."
+puts "Please wait ..."
+finder = FindMyMac::Finder.new
+finder.findMacs

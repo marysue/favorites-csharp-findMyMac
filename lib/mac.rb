@@ -1,5 +1,3 @@
-require "./config/environment.rb"
-
 class Mac
 
   @@all = []

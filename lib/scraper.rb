@@ -1,5 +1,3 @@
-require "./config/environment.rb"
-
 class Scraper
   attr_accessor :scraperHash
 
