@@ -30,6 +30,30 @@ class Mac
     end
   end
 
+  #======================================================================
+  # matches :
+  #    Examines each users requirement with a given object
+  #    returns true if there's a match
+  #    if any requirement doesn't match, we stop and return false.
+  #======================================================================
+  def matches(hash)
+    matched = true
+    hash.each do |k, v|
+      if matched #only continue loop if we continue to match properties
+        case k.to_s
+          when "cpu"
+            @cpu == v ? matched = true : matched = false
+          when  "display"
+            @display_size == v ? matched = true : matched = false
+          when "number_cores"
+            @number_cores == v ? matched = true : matched = false
+          end #case
+        end #if matched
+    end #each
+    matched
+  end
+
+
   def print
       puts("Computer Type:  #{@computer_type}") unless @computer_type == "" || @computer_type == nil
       puts("Model:          #{@model}") unless @model == "" || @model == nil

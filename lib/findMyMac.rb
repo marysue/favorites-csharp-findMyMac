@@ -333,9 +333,14 @@ module FindMyMac
       if (matchedObjsArr.size > 0)
         puts("We have found #{matchedObjsArr.size} computers matching this configuration.\n\n")
       end
-      #enter new configurations to narrow results?
+      #exit to enter new configuration to narrow search
+      #or exit because no results are found
       exit = enterNewConfig(matchedObjsArr)
+
+      #if we want to continue, print matched items
       exit != 'y' && matchedObjsArr.size > 0 ? printMatchedItems(matchedObjsArr) : nil
+
+      #get additional info and open in browser?
       matchedObjsArr.size > 0 && exit == "n" ? getAddlInfo(matchedObjsArr) :nil
 
     end
@@ -373,51 +378,13 @@ module FindMyMac
       matchedObjs = []
 
         objs.each do |x|
-          if matches(x, configHash)
+          if x.matches(configHash)
             matchedObjs << x
           end
         end
         matchedObjs
     end
-    #======================================================================
-    # matches :
-    #    Examines each users requirement with a given object
-    #    returns true if there's a match
-    #    if any requirement doesn't match, we stop and return false.
-    #======================================================================
-    def matches(obj, hash)
-      propertiesArr = hashKeysToStringArr(hash)
 
-      matched = true
-      propertiesArr.each do |x|
-        if matched #only continue loop if we continue to match properties
-          case x
-            when "cpu"
-              obj.cpu == hash[:cpu] ? matched = true : matched = false
-            when  "display"
-              obj.display_size == hash[:display] ? matched = true : matched = false
-            when "number_cores"
-              obj.number_cores == hash[:number_cores] ? matched = true : matched = false
-            end #case
-          end #if matched
-      end #each
-      matched
-    end
-    #==============================================================================
-    #hashKeysToStringArr()
-    #    Helper function for matches as we need no understand what
-    #    we are looking at
-    #==============================================================================
-    def hashKeysToStringArr(hash)
-      propertiesArr = []
-
-      hash.each do |k, v|
-        k == :cpu ? propertiesArr << "cpu" : nil
-        k == :display ? propertiesArr << "display" : nil
-        k == :number_cores ? propertiesArr << "number_cores" : nil
-      end
-      propertiesArr
-    end
     #====================================================================
     # enterNewConfig()
     #   Presents final count of matches. Asks user if they want
@@ -446,11 +413,13 @@ module FindMyMac
 
       moreInfo = getYNInput("Would you like additional information on any item? [y/n] ")
       if moreInfo == 'y'
-        print("Please enter which item you would like more information on: 1..#{matchedObjsArr.size}:  ")
-        index = gets.strip.to_i
-        while (index < 1 || index > matchedObjsArr.size )
-          print("Please enter a value between 1..#{matchedObjsArr.size}")
+        if matchedObjsArr.size > 1
+          print("Please enter which item you would like more information on: 1..#{matchedObjsArr.size}:  ")
           index = gets.strip.to_i
+          while (index < 1 || index > matchedObjsArr.size )
+            print("Please enter a value between 1..#{matchedObjsArr.size}")
+            index = gets.strip.to_i
+          end
         end
         puts("\nConfiguration requested:  \n")
         puts("================================")
@@ -460,6 +429,10 @@ module FindMyMac
         matchedObjsArr[index - 1].print
         puts("")
 
+        input = getYNInput("Would you like to launch this webpage in your browser?  [y/n]:  ")
+        if input.downcase == 'y'
+          Launchy.open(matchedObjsArr[index - 1].link)
+        end
       end
     end
     #====================================================================
